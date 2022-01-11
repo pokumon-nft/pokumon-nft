@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
+import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -16,13 +17,13 @@ contract PokumonNFT is
     constructor() initializer {}
 
     struct Status {
+        string name;
         uint256 level;
         uint256 attack;
         uint256 defense;
         uint256 experience;
     }
     Status public status;
-    // string name = "";
     uint256 public lastWalkTime;
     uint256 public lastEatTime;
 
@@ -45,14 +46,10 @@ contract PokumonNFT is
         onlyOwner
     {}
 
-    // function setName (string memory newName) public {
-    //     // Burn Token
-    //     name = newName;
-    // }
-
-    // function getName () public view returns (string memory) {
-    //     return name;
-    // }
+    function setName(string memory _name) public {
+        console.log("Changing name from '%s' to '%s'", status.name, _name);
+        status.name = _name;
+    }
 
     function getStatus() public view returns (Status memory) {
         return status;

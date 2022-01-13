@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20Burnable
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "./PokumonNFT.sol";
 
 contract PokumonToken is
     Initializable,
@@ -16,6 +17,9 @@ contract PokumonToken is
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+
+    mapping(address => uint256) history;
+    uint256 randNonce = 0;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -31,8 +35,22 @@ contract PokumonToken is
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+    function mint(address to) public onlyRole(MINTER_ROLE) {
+        require(
+            history[msg.sender] == 0 ||
+                block.timestamp > history[msg.sender] + 3 hours
+        );
+        PokumonNFT nft = PokumonNFT(msg.sender);
+        uint256 level = nft.getLevel();
+        uint256 amount = 9 + randMod(3) * level;
         _mint(to, amount);
+        history[msg.sender] = block.timestamp;
+    }
+
+    function burn(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+        PokumonNFT nft = PokumonNFT(msg.sender);
+        require(nft.owner() == to);
+        _burn(to, amount);
     }
 
     function _authorizeUpgrade(address newImplementation)
@@ -40,4 +58,14 @@ contract PokumonToken is
         override
         onlyRole(UPGRADER_ROLE)
     {}
+
+    function randMod(uint256 _modulus) internal returns (uint256) {
+        randNonce++;
+        return
+            uint256(
+                keccak256(
+                    abi.encodePacked(block.timestamp, msg.sender, randNonce)
+                )
+            ) % _modulus;
+    }
 }

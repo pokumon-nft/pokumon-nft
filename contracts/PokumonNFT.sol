@@ -71,6 +71,7 @@ contract PokumonNFT is
         require(block.timestamp > lastWalkTime + 8 hours);
         PokumonToken token = PokumonToken(tokenAddress);
         token.mint(my_address);
+        lastWalkTime = block.timestamp;
     }
 
     function eat(address my_address) public {
@@ -87,6 +88,7 @@ contract PokumonNFT is
             status.attack += randMod(10);
             status.defense += randMod(10);
         }
+        lastEatTime = block.timestamp;
     }
 
     function randMod(uint256 _modulus) internal returns (uint256) {

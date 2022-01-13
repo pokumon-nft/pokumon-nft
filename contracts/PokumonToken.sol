@@ -50,6 +50,7 @@ contract PokumonToken is
     function burn(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
         PokumonNFT nft = PokumonNFT(msg.sender);
         require(nft.owner() == to);
+        require(balanceOf(to) >= amount);
         _burn(to, amount);
     }
 

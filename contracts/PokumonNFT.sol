@@ -27,6 +27,7 @@ contract PokumonNFT is
     Status public status;
     uint256 public lastWalkTime;
     uint256 public lastEatTime;
+    bool public wasChangedName = false;
     address tokenAddress = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
     uint256 randNonce = 0;
 
@@ -49,7 +50,11 @@ contract PokumonNFT is
         onlyOwner
     {}
 
-    function setName(string memory _name) public {
+    function setName(address my_address, string memory _name) public {
+        require(!wasChangedName);
+        PokumonToken token = PokumonToken(tokenAddress);
+        require(token.balanceOf(my_address) >= 100);
+        token.burn(my_address, 100);
         console.log("Changing name from '%s' to '%s'", status.name, _name);
         status.name = _name;
     }
@@ -72,6 +77,7 @@ contract PokumonNFT is
         require(block.timestamp > lastEatTime + 3 hours);
         require(status.level <= 100);
         PokumonToken token = PokumonToken(tokenAddress);
+        require(token.balanceOf(my_address) >= 10);
         token.burn(my_address, 10);
 
         status.experience += 30;

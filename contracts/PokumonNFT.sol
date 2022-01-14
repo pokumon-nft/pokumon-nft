@@ -59,7 +59,7 @@ contract PokumonNFT is
         PokumonToken token = PokumonToken(tokenAddress);
         require(token.balanceOf(wallet) >= 100);
         require(ownerOf(_tokenId) == msg.sender);
-        token.burn(wallet, _tokenId, 100);
+        token.burn(wallet, 100);
         console.log("Changing name from '%s' to '%s'", status.name, _name);
         status.name = _name;
     }
@@ -76,7 +76,7 @@ contract PokumonNFT is
         require(ownerOf(_tokenId) == msg.sender);
         require(block.timestamp > lastWalkTime + 8 hours);
         PokumonToken token = PokumonToken(tokenAddress);
-        token.mint(wallet, _tokenId);
+        token.mint(wallet);
         lastWalkTime = block.timestamp;
     }
 
@@ -87,7 +87,7 @@ contract PokumonNFT is
         PokumonToken token = PokumonToken(tokenAddress);
         require(token.balanceOf(wallet) >= 10);
 
-        token.burn(wallet, _tokenId, 10);
+        token.burn(wallet, 10);
 
         status.experience += 30;
         if (100 + 25 * (status.level - 1) > status.experience) {

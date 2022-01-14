@@ -19,7 +19,6 @@ contract PokumonToken is
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
-    mapping(address => mapping(uint256 => uint256)) balancesRelatedNft;
     mapping(address => uint256) history;
     uint256 randNonce = 0;
 
@@ -37,7 +36,7 @@ contract PokumonToken is
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function mint(address to, uint256 _tokenId) public onlyRole(MINTER_ROLE) {
+    function mint(address to) public onlyRole(MINTER_ROLE) {
         require(
             history[msg.sender] == 0 ||
                 block.timestamp > history[msg.sender] + 3 hours
@@ -47,19 +46,13 @@ contract PokumonToken is
         uint256 amount = 9 + randMod(3) * level;
         _mint(to, amount);
         history[msg.sender] = block.timestamp;
-        balancesRelatedNft[to][_tokenId] += amount;
     }
 
-    function burn(
-        address to,
-        uint256 _tokenId,
-        uint256 amount
-    ) public onlyRole(BURNER_ROLE) {
+    function burn(address to, uint256 amount) public onlyRole(BURNER_ROLE) {
         PokumonNFT nft = PokumonNFT(msg.sender);
         require(nft.owner() == to);
         require(balanceOf(to) >= amount);
         _burn(to, amount);
-        balancesRelatedNft[to][_tokenId] -= amount;
     }
 
     function _authorizeUpgrade(address newImplementation)

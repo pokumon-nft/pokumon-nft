@@ -15,9 +15,8 @@ contract PokumonToken is
     AccessControlUpgradeable,
     UUPSUpgradeable
 {
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant POKUMON_NFT_ROLE = keccak256("POKUMON_NFT_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
-    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
     mapping(address => uint256) history;
     uint256 randNonce = 0;
@@ -32,11 +31,11 @@ contract PokumonToken is
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(POKUMON_NFT_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
     }
 
-    function mint(address to) public onlyRole(MINTER_ROLE) {
+    function mint(address to) public onlyRole(POKUMON_NFT_ROLE) {
         require(
             history[msg.sender] == 0 ||
                 block.timestamp > history[msg.sender] + 3 hours
@@ -48,7 +47,10 @@ contract PokumonToken is
         history[msg.sender] = block.timestamp;
     }
 
-    function burn(address to, uint256 amount) public onlyRole(BURNER_ROLE) {
+    function burn(address to, uint256 amount)
+        public
+        onlyRole(POKUMON_NFT_ROLE)
+    {
         PokumonNFT nft = PokumonNFT(msg.sender);
         require(nft.owner() == to);
         require(balanceOf(to) >= amount);

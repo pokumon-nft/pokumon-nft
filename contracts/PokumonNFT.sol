@@ -50,11 +50,16 @@ contract PokumonNFT is
         onlyOwner
     {}
 
-    function setName(address wallet, string memory _name) public {
+    function setName(
+        address wallet,
+        string memory _name,
+        uint256 _tokenId
+    ) public {
         require(!wasChangedName);
         PokumonToken token = PokumonToken(tokenAddress);
         require(token.balanceOf(wallet) >= 100);
-        token.burn(wallet, 100);
+        require(ownerOf(_tokenId) == msg.sender);
+        token.burn(wallet, _tokenId, 100);
         console.log("Changing name from '%s' to '%s'", status.name, _name);
         status.name = _name;
     }
@@ -67,19 +72,22 @@ contract PokumonNFT is
         return status.level;
     }
 
-    function walk(address wallet) public {
+    function walk(address wallet, uint256 _tokenId) public {
+        require(ownerOf(_tokenId) == msg.sender);
         require(block.timestamp > lastWalkTime + 8 hours);
         PokumonToken token = PokumonToken(tokenAddress);
-        token.mint(wallet);
+        token.mint(wallet, _tokenId);
         lastWalkTime = block.timestamp;
     }
 
-    function eat(address wallet) public {
+    function eat(address wallet, uint256 _tokenId) public {
+        require(ownerOf(_tokenId) == msg.sender);
         require(block.timestamp > lastEatTime + 3 hours);
         require(status.level <= 100);
         PokumonToken token = PokumonToken(tokenAddress);
         require(token.balanceOf(wallet) >= 10);
-        token.burn(wallet, 10);
+
+        token.burn(wallet, _tokenId, 10);
 
         status.experience += 30;
         if (100 + 25 * (status.level - 1) > status.experience) {

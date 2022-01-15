@@ -55,6 +55,38 @@ contract PokumonNFT is
         _setTokenURI(tokenId, uri);
     }
 
+    function safeMintWithName(
+        address to,
+        string memory uri,
+        string memory name
+    ) public onlyOwner {
+        safeMint(to, uri);
+        status = Status({
+            name: name,
+            level: 1,
+            attack: 10,
+            defense: 10,
+            experience: 0
+        });
+    }
+
+    function safeMintWithStatus(
+        address to,
+        string memory uri,
+        string memory name,
+        uint256 attack,
+        uint256 defense
+    ) public onlyOwner {
+        safeMint(to, uri);
+        status = Status({
+            name: name,
+            level: 1,
+            attack: attack,
+            defense: defense,
+            experience: 0
+        });
+    }
+
     function _authorizeUpgrade(address newImplementation)
         internal
         override

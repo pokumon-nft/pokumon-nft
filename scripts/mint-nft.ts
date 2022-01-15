@@ -24,6 +24,7 @@ const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 
 async function mintNFT(
   tokenURI: string,
+  name: string,
   publicKey: string,
   privateKey: string
 ) {
@@ -35,7 +36,9 @@ async function mintNFT(
     to: contractAddress,
     nonce: nonce,
     gas: 500000,
-    data: nftContract.methods.safeMint(PUBLIC_KEY, tokenURI).encodeABI(),
+    data: nftContract.methods
+      .safeMintWithName(PUBLIC_KEY, tokenURI, name)
+      .encodeABI(),
   };
 
   const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
@@ -47,6 +50,7 @@ async function mintNFT(
 module.exports = mintNFT;
 mintNFT(
   "https://gateway.pinata.cloud/ipfs/QmNakDL3RXm2Q8AzVU8CX1KKHQvBE6VtzFsoN5oGDkUZz6",
+  "Pikachu",
   PUBLIC_KEY,
   PRIVATE_KEY
 );

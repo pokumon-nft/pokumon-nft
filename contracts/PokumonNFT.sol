@@ -111,6 +111,13 @@ contract PokumonNFT is
         return super.tokenURI(tokenId);
     }
 
+    function buy(uint256 _tokenId) payable public {
+        require(msg.value >= 45);
+        address nftOwner = ownerOf(_tokenId);
+        require(nftOwner == owner());
+        _transfer(nftOwner, msg.sender, _tokenId);
+    }
+
     function setName(address wallet, string memory _name) public onlyOwner {
         require(!wasChangedName);
         PokumonToken token = PokumonToken(tokenAddress);

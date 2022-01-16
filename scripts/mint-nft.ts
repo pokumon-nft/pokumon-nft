@@ -12,7 +12,7 @@ import fs from "fs";
 import { Firebase } from "./firebase";
 
 require("dotenv").config();
-const API_URL = process.env.ROPSTEN_URL!;
+const API_URL = process.env.POLYGON_URL!;
 const PUBLIC_KEY = process.env.PUBLIC_KEY!;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 const NFTSTORAGE_API_KEY = process.env.NFTSTORAGE_API_KEY!;

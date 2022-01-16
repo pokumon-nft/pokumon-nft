@@ -45,6 +45,7 @@
     "@alch/alchemy-web3": "^1.1.9",
     "@openzeppelin/contracts": "^4.4.1",
     "@openzeppelin/contracts-upgradeable": "^4.4.1",
+    "firebase-admin": "^10.0.1",
     "nft.storage": "^5.2.0"
   }
 }

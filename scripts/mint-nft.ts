@@ -24,7 +24,7 @@ if (!API_URL || !PUBLIC_KEY || !PRIVATE_KEY || !NFTSTORAGE_API_KEY) {
 
 const web3 = createAlchemyWeb3(API_URL);
 const contract = require("../artifacts/contracts/PokumonNFT.sol/PokumonNFT.json");
-const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"; // Input NFT contract address
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Input NFT contract address
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress);
 const storageClient = new NFTStorage({ token: NFTSTORAGE_API_KEY });
 

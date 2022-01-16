@@ -6,7 +6,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
-
+import "@openzeppelin/hardhat-upgrades";
 dotenv.config();
 
 // This is a sample Hardhat task. To learn how to create your own go to

@@ -31,9 +31,9 @@ contract PokumonNFT is
     Status public status;
     uint256 public lastWalkTime;
     uint256 public lastEatTime;
-    bool public wasChangedName = false;
-    address tokenAddress = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
-    uint256 randNonce = 0;
+    bool public wasChangedName;
+    address tokenAddress;
+    uint256 randNonce;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -44,8 +44,11 @@ contract PokumonNFT is
         __Ownable_init();
         __UUPSUpgradeable_init();
 
+        tokenAddress = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
         lastWalkTime = block.timestamp;
         lastEatTime = block.timestamp;
+        wasChangedName = false;
+        randNonce = 0;
     }
 
     function safeMint(address to, string memory uri) public onlyOwner {

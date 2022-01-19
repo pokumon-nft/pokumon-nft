@@ -39,12 +39,12 @@ contract PokumonNFT is
     constructor() initializer {}
 
     function initialize() public initializer {
-        __ERC721_init("PokumonNFT", "PKMN");
+        __ERC721_init("pokumon-ai", "PKMN");
         __ERC721URIStorage_init();
         __Ownable_init();
         __UUPSUpgradeable_init();
 
-        tokenAddress = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
+        tokenAddress = 0xe1b0545b4E3aFB3aDC2D42ceFa08A33E9faaa73B;
         lastWalkTime = block.timestamp;
         lastEatTime = block.timestamp;
         wasChangedName = false;
@@ -114,7 +114,7 @@ contract PokumonNFT is
         return super.tokenURI(tokenId);
     }
 
-    function buy(uint256 _tokenId) payable public {
+    function buy(uint256 _tokenId) public payable {
         require(msg.value >= 45);
         address nftOwner = ownerOf(_tokenId);
         require(nftOwner == owner());
@@ -128,10 +128,6 @@ contract PokumonNFT is
         token.burn(wallet, 100);
         console.log("Changing name from '%s' to '%s'", status.name, _name);
         status.name = _name;
-    }
-
-    function getStatus() public view returns (Status memory) {
-        return status;
     }
 
     function getLevel() public view returns (uint256) {

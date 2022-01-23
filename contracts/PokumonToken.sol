@@ -19,7 +19,7 @@ contract PokumonToken is
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     mapping(address => uint256) history;
-    uint256 randNonce = 0;
+    uint256 randNonce;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -33,6 +33,8 @@ contract PokumonToken is
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(POKUMON_NFT_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
+
+        randNonce = 0;
     }
 
     function mint(address to) public onlyRole(POKUMON_NFT_ROLE) {

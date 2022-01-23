@@ -4,7 +4,14 @@
   "description": "NFT for pokumon",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "npx hardhat clean",
+    "deploy-nft-testnet": "yarn run clean && npx hardhat run --network ropsten scripts/deploy-nft.ts",
+    "deploy-token-testnet": "yarn run clean && npx hardhat run --network ropsten scripts/deploy-token.ts",
+    "deploy-nft-mainnet": "yarn run clean && cross-env NODE_ENV=production npx hardhat run --network polygon scripts/deploy-nft.ts",
+    "deploy-token-mainnet": "yarn run clean && cross-env NODE_ENV=production npx hardhat run --network polygon scripts/deploy-token.ts",
+    "mint-nft-testnet": "yarn run clean && npx hardhat run --network ropsten scripts/mint-nft.ts",
+    "mint-nft-mainnet": "yarn run clean && cross-env NODE_ENV=production npx hardhat run --network polygon scripts/mint-nft.ts"
   },
   "author": "Toshiki Tomihira",
   "license": "ISC",
@@ -21,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.4",
+    "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",

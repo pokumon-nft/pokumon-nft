@@ -1,13 +1,12 @@
-import * as dotenv from "dotenv";
-
 import { HardhatUserConfig, task } from "hardhat/config";
+import { setEnv } from "./set-env";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import "@openzeppelin/hardhat-upgrades";
-dotenv.config();
+setEnv();
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -26,7 +25,12 @@ const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
     polygon: {
-      url: process.env.POLYGON_URL || "",
+      url: process.env.API_URL || "",
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+    ropsten: {
+      url: process.env.API_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },

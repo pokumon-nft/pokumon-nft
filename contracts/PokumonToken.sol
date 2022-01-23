@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20Burnable
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "./PokumonNFT.sol";
 
 contract PokumonToken is
     Initializable,
@@ -37,14 +36,11 @@ contract PokumonToken is
         randNonce = 0;
     }
 
-    function mint(address to) public onlyRole(POKUMON_NFT_ROLE) {
+    function mint(address to, uint256 amount) public onlyRole(POKUMON_NFT_ROLE) {
         require(
             history[msg.sender] == 0 ||
                 block.timestamp > history[msg.sender] + 3 hours
         );
-        PokumonNFT nft = PokumonNFT(msg.sender);
-        uint256 level = nft.getLevel();
-        uint256 amount = 9 + randMod(3) * level;
         _mint(to, amount);
         history[msg.sender] = block.timestamp;
     }
@@ -53,8 +49,6 @@ contract PokumonToken is
         public
         onlyRole(POKUMON_NFT_ROLE)
     {
-        PokumonNFT nft = PokumonNFT(msg.sender);
-        require(nft.owner() == to);
         require(balanceOf(to) >= amount);
         _burn(to, amount);
     }

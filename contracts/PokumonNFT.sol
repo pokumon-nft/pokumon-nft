@@ -55,7 +55,10 @@ contract PokumonNFT is
         __UUPSUpgradeable_init();
 
         randNonce = 0;
-        pokumonToken = PokumonToken(0x7509ed1DD78Eab250fA037B98C51b23584011f1D);
+    }
+
+    function setPokumon(address tokenAddress) public onlyOwner {
+        pokumonToken = PokumonToken(tokenAddress);
     }
 
     function initializePokumonForUpgrade(string memory name, uint256 tokenId) public onlyOwner {
@@ -181,7 +184,7 @@ contract PokumonNFT is
         pokumonToken.burn(wallet, 10);
 
         pokumons[_tokenId].status.experience += 30;
-        if (100 + 25 * (pokumons[_tokenId].status.level - 1) > pokumons[_tokenId].status.experience) {
+        if (pokumons[_tokenId].status.experience > 100 + 25 * (pokumons[_tokenId].status.level - 1) ) {
             pokumons[_tokenId].status.experience -= 100 + 25 * (pokumons[_tokenId].status.level - 1);
             pokumons[_tokenId].status.level += 1;
             pokumons[_tokenId].status.attack += randMod(10);

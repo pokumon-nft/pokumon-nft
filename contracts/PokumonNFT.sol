@@ -28,12 +28,22 @@ contract PokumonNFT is
         uint256 defense;
         uint256 experience;
     }
+    struct Pokumon {
+        Status status;
+        uint256 lastWalkTime;
+        uint256 lastEatTime;
+        bool wasChangedName;
+    }
+    // old variable before upgrade
     Status public status;
     uint256 public lastWalkTime;
     uint256 public lastEatTime;
     bool public wasChangedName;
+
     address tokenAddress;
     uint256 randNonce;
+    mapping(uint256 => Pokumon) public pokumons;
+    PokumonToken private pokumonToken;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
@@ -44,16 +54,32 @@ contract PokumonNFT is
         __Ownable_init();
         __UUPSUpgradeable_init();
 
-        tokenAddress = 0xe1b0545b4E3aFB3aDC2D42ceFa08A33E9faaa73B;
-        lastWalkTime = block.timestamp;
-        lastEatTime = block.timestamp;
-        wasChangedName = false;
         randNonce = 0;
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+    function setPokumon(address tokenAddress) public onlyOwner {
+        pokumonToken = PokumonToken(tokenAddress);
+    }
+
+    function initializePokumonForUpgrade(string memory name, uint256 tokenId) public onlyOwner {
+        Status memory status = Status({
+            name: name,
+            level: 1,
+            attack: 10,
+            defense: 10,
+            experience: 0
+        });
+        setPokumon(status, tokenId);
+    }
+
+    function setPokumon(Status memory status, uint256 tokenId) internal {
+        pokumons[tokenId].lastWalkTime = block.timestamp;
+        pokumons[tokenId].lastEatTime = block.timestamp;
+        pokumons[tokenId].wasChangedName = false;
+        pokumons[tokenId].status = status;
+    }
+
+    function safeMint(address to, string memory uri, uint256 tokenId) public onlyOwner {
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
     }
@@ -63,14 +89,18 @@ contract PokumonNFT is
         string memory uri,
         string memory name
     ) public onlyOwner {
-        safeMint(to, uri);
-        status = Status({
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        Status memory status = Status({
             name: name,
             level: 1,
             attack: 10,
             defense: 10,
             experience: 0
         });
+
+        safeMint(to, uri, tokenId);
+        setPokumon(status, tokenId);
     }
 
     function safeMintWithStatus(
@@ -80,14 +110,18 @@ contract PokumonNFT is
         uint256 attack,
         uint256 defense
     ) public onlyOwner {
-        safeMint(to, uri);
-        status = Status({
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        Status memory status = Status({
             name: name,
             level: 1,
             attack: attack,
             defense: defense,
             experience: 0
         });
+
+        safeMint(to, uri, tokenId);
+        setPokumon(status, tokenId);
     }
 
     function _authorizeUpgrade(address newImplementation)
@@ -121,42 +155,42 @@ contract PokumonNFT is
         _transfer(nftOwner, msg.sender, _tokenId);
     }
 
-    function setName(address wallet, string memory _name) public onlyOwner {
-        require(!wasChangedName);
-        PokumonToken token = PokumonToken(tokenAddress);
-        require(token.balanceOf(wallet) >= 100);
-        token.burn(wallet, 100);
-        console.log("Changing name from '%s' to '%s'", status.name, _name);
-        status.name = _name;
+    function setName(address wallet, string memory _name, uint256 _tokenId) public {
+        address nftOwner = ownerOf(_tokenId);
+        require(nftOwner == owner());
+        require(!pokumons[_tokenId].wasChangedName);
+        require(pokumonToken.balanceOf(wallet) >= 100);
+        pokumonToken.burn(wallet, 100);
+        console.log("Changing name from '%s' to '%s'", pokumons[_tokenId].status.name, _name);
+        pokumons[_tokenId].status.name = _name;
     }
 
-    function getLevel() public view returns (uint256) {
-        return status.level;
+    function walk(address wallet, uint256 _tokenId) public {
+        address nftOwner = ownerOf(_tokenId);
+        require(nftOwner == owner());
+        require(block.timestamp > pokumons[_tokenId].lastWalkTime + 8 hours);
+        uint256 amount = 9 + randMod(3) * pokumons[_tokenId].status.level;
+        pokumonToken.mint(wallet, amount);
+        pokumons[_tokenId].lastWalkTime = block.timestamp;
     }
 
-    function walk(address wallet) public onlyOwner {
-        require(block.timestamp > lastWalkTime + 8 hours);
-        PokumonToken token = PokumonToken(tokenAddress);
-        token.mint(wallet);
-        lastWalkTime = block.timestamp;
-    }
+    function eat(address wallet, uint256 _tokenId) public {
+        address nftOwner = ownerOf(_tokenId);
+        require(nftOwner == owner());
+        require(block.timestamp > pokumons[_tokenId].lastEatTime + 3 hours);
+        require(pokumons[_tokenId].status.level <= 100);
+        require(pokumonToken.balanceOf(wallet) >= 10);
 
-    function eat(address wallet) public onlyOwner {
-        require(block.timestamp > lastEatTime + 3 hours);
-        require(status.level <= 100);
-        PokumonToken token = PokumonToken(tokenAddress);
-        require(token.balanceOf(wallet) >= 10);
+        pokumonToken.burn(wallet, 10);
 
-        token.burn(wallet, 10);
-
-        status.experience += 30;
-        if (100 + 25 * (status.level - 1) > status.experience) {
-            status.experience -= 100 + 25 * (status.level - 1);
-            status.level += 1;
-            status.attack += randMod(10);
-            status.defense += randMod(10);
+        pokumons[_tokenId].status.experience += 30;
+        if (pokumons[_tokenId].status.experience > 100 + 25 * (pokumons[_tokenId].status.level - 1) ) {
+            pokumons[_tokenId].status.experience -= 100 + 25 * (pokumons[_tokenId].status.level - 1);
+            pokumons[_tokenId].status.level += 1;
+            pokumons[_tokenId].status.attack += randMod(10);
+            pokumons[_tokenId].status.defense += randMod(10);
         }
-        lastEatTime = block.timestamp;
+        pokumons[_tokenId].lastEatTime = block.timestamp;
     }
 
     function randMod(uint256 _modulus) internal returns (uint256) {

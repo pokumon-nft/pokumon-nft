@@ -38,7 +38,7 @@ export class Firebase {
     tokenId: number,
     tokenUri: string
   ) {
-    const ref = this.db.collection("pokumons").doc(tokenId.toString());
+    const ref = this.db.collection("aimons").doc(tokenId.toString());
     ref.set({
       image_url: imageUrl,
       name: name,

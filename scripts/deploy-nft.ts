@@ -14,8 +14,8 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const PokumonNFT = await ethers.getContractFactory("PokumonNFT");
-  const nft = await upgrades.deployProxy(PokumonNFT);
+  const AimonNFT = await ethers.getContractFactory("AimonNFT");
+  const nft = await upgrades.deployProxy(AimonNFT);
 
   await nft.deployed();
 

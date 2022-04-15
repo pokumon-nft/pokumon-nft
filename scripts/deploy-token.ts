@@ -14,8 +14,8 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const PokumonToken = await ethers.getContractFactory("PokumonToken");
-  const token = await upgrades.deployProxy(PokumonToken);
+  const AimonToken = await ethers.getContractFactory("AimonToken");
+  const token = await upgrades.deployProxy(AimonToken);
 
   await token.deployed();
 
